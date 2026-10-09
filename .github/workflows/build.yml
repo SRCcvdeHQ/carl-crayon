@@ -23,6 +23,26 @@ jobs:
           done
       - name: Production build
         run: npm run build
+      - name: Install browser test tools
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Run mobile smoke test
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node tests/mobile-smoke.mjs
+      - name: Upload mobile screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-smoke-screenshot
+          path: mobile-smoke.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Archive build
         uses: actions/upload-artifact@v4
         with:
