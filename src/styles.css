@@ -127,3 +127,10 @@ header .brand-tagline span{padding:0 2px}
  header .brand-tagline{font-size:7px}
  .hero{padding-top:140px}
 }
+
+/* Functional YouTube preview: the play affordance is an actual link. */
+.video-link{display:block;min-width:0}
+.video-link .video-photo{cursor:pointer}
+.video-link:hover .play{background:#c5fa42;color:#0b0c0b;border-color:#c5fa42}
+.video-link:focus-visible{outline:3px solid #c5fa42;outline-offset:5px}
+@media(prefers-reduced-motion:reduce){.video-link .play{transition:none}}

@@ -11,6 +11,7 @@ if(!title.includes('DISCIPLINE'))throw new Error('Missing hero headline');
 const expected=['images/carl-hero.jpg','images/carl-youtube.jpg','images/carl-legday.jpg','images/carl-shoulders.jpg','images/carl-back.jpg','images/carl-chest.jpg','images/carl-lifestyle.jpg'];
 for(const path of expected){const r=await page.request.get('http://127.0.0.1:4173/carl-crayon/'+path);if(!r.ok())throw new Error('Missing image '+path);}
 const socialLinks=await page.locator('a[href]').evaluateAll(anchors=>anchors.map(a=>a.getAttribute('href')));
+if(await page.locator('.video-link[href="https://www.youtube.com/@carlc.official"]').count()!==1)throw new Error('YouTube preview play control is not a link');
 for(const url of ['https://www.youtube.com/@carlc.official','https://www.tiktok.com/@carlc.official','https://www.instagram.com/carlc.official/'])if(!socialLinks.includes(url))throw new Error('Missing social '+url);
 for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
   await page.setViewportSize({width,height:844});
