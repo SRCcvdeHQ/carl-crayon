@@ -32,6 +32,14 @@ for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
     throw new Error('Hero overlaps navigation at '+width+'px: eyebrow top '+heroClearance.eyebrowTop+', header bottom '+heroClearance.headerBottom);
 }
 await page.setViewportSize({width:390,height:844});
+const layout=await page.evaluate(()=>{
+  const box=s=>document.querySelector(s).getBoundingClientRect();
+  const eyebrow=box('.desktop-hero-pillars'),headline=box('.hero h1'),buttons=box('.hero .buttons'),hero=box('.hero'),youtube=box('.youtube'),intro=box('.youtube .eyebrow');
+  return {headlineGap:headline.top-eyebrow.bottom,buttonGap:hero.bottom-buttons.bottom,sectionGap:intro.top-youtube.top,heroHeight:hero.height};
+});
+if(layout.headlineGap<0||layout.headlineGap>40)throw new Error('Brand line disconnected from headline: '+JSON.stringify(layout));
+if(layout.buttonGap>120)throw new Error('Excessive blank area below hero buttons: '+JSON.stringify(layout));
+if(layout.sectionGap>105)throw new Error('Excessive top spacing before YouTube section: '+JSON.stringify(layout));
 await page.getByRole('button',{name:/toggle menu/i}).click();
 if(!(await page.getByRole('navigation',{name:'Main navigation'}).isVisible()))throw new Error('Mobile navigation does not open');
 if(errors.length)throw new Error('JavaScript runtime errors: '+errors.join('; '));
