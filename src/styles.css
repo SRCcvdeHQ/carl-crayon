@@ -188,3 +188,46 @@ a:focus-visible,button:focus-visible{outline:3px solid #c5fa42;outline-offset:4p
   .hero{min-height:0;padding-top:180px;padding-bottom:77px}
   .hero h1{font-size:clamp(49px,15.2vw,60px)}
 }
+
+
+/* Mobile hero reset: one document-flow content stack, no floating pillars. */
+@media(max-width:600px){
+  .hero{
+    display:block;
+    position:relative;
+    height:auto;
+    min-height:0;
+    max-height:none;
+    padding:148px 0 74px;
+  }
+  .hero>.mobile-hero-pillars{display:none!important}
+  .hero-content{
+    position:relative;
+    display:block;
+    width:calc(100% - 36px);
+    margin:0 auto;
+    padding:0;
+  }
+  .hero-content>.desktop-hero-pillars{
+    display:block;
+    position:static;
+    width:auto;
+    margin:0 0 22px;
+    font-size:clamp(9px,2.4vw,12px);
+    letter-spacing:.1em;
+    line-height:1.5;
+    white-space:normal;
+  }
+  .hero h1{
+    font-size:clamp(54px,15.6vw,94px);
+    line-height:.84;
+    margin:0 0 22px;
+  }
+  .hero-content p{margin:0;line-height:1.5}
+  .hero .buttons{margin-top:23px}
+  .hero .edge{bottom:15px}
+}
+@media(max-width:370px){
+  .hero{min-height:0;padding:148px 0 70px}
+  .hero h1{font-size:clamp(49px,15vw,60px)}
+}
