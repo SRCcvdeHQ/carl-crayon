@@ -24,7 +24,7 @@ for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
   if(result.headlineWidth>result.viewport)throw new Error('Headline too wide at '+width+'px');
   const heroClearance=await page.evaluate(()=>{
     const header=document.querySelector('header').getBoundingClientRect();
-    const selector=window.innerWidth<=600?'.mobile-hero-pillars':'.desktop-hero-pillars';
+    const selector='.desktop-hero-pillars';
     const eyebrow=document.querySelector(selector).getBoundingClientRect();
     return {headerBottom:header.bottom,eyebrowTop:eyebrow.top};
   });
