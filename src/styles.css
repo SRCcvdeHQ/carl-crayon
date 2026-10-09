@@ -120,3 +120,17 @@ a:focus-visible,button:focus-visible{outline:3px solid #c5fa42;outline-offset:4p
   .hero{min-height:690px}
   .hero-content{padding-top:44px;padding-bottom:46px}
 }
+
+
+/* Mobile: anchor the four brand pillars just below the navigation. */
+@media(max-width:600px){
+  .hero-content{position:static;padding-top:0}
+  .hero-content>.eyebrow{
+    position:absolute;
+    top:clamp(154px,21svh,195px);
+    left:18px;
+    right:18px;
+    z-index:3;
+    line-height:1.6;
+  }
+}
