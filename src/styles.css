@@ -134,3 +134,22 @@ a:focus-visible,button:focus-visible{outline:3px solid #c5fa42;outline-offset:4p
     line-height:1.6;
   }
 }
+
+/* Mobile pillars belong to the hero itself, independent of text block flow. */
+.mobile-hero-pillars{display:none}
+@media(max-width:600px){
+  .hero-content{position:relative}
+  .hero-content>.desktop-hero-pillars{display:none}
+  .hero>.mobile-hero-pillars{
+    display:block;
+    position:absolute;
+    top:122px;
+    left:18px;
+    right:18px;
+    z-index:4;
+    font-size:clamp(9px,2.3vw,12px);
+    letter-spacing:.12em;
+    white-space:normal;
+    line-height:1.6;
+  }
+}
