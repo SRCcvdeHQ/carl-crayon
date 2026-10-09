@@ -22,6 +22,13 @@ for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
   }));
   if(result.overflow>2)throw new Error('Horizontal overflow at '+width+'px: '+result.overflow+'px');
   if(result.headlineWidth>result.viewport)throw new Error('Headline too wide at '+width+'px');
+  const heroClearance=await page.evaluate(()=>{
+    const header=document.querySelector('header').getBoundingClientRect();
+    const eyebrow=document.querySelector('.hero-content .eyebrow').getBoundingClientRect();
+    return {headerBottom:header.bottom,eyebrowTop:eyebrow.top};
+  });
+  if(heroClearance.eyebrowTop<heroClearance.headerBottom+12)
+    throw new Error('Hero overlaps navigation at '+width+'px: eyebrow top '+heroClearance.eyebrowTop+', header bottom '+heroClearance.headerBottom);
 }
 await page.setViewportSize({width:390,height:844});
 await page.getByRole('button',{name:/toggle menu/i}).click();
