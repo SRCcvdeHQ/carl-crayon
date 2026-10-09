@@ -22,22 +22,28 @@ for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
   }));
   if(result.overflow>2)throw new Error('Horizontal overflow at '+width+'px: '+result.overflow+'px');
   if(result.headlineWidth>result.viewport)throw new Error('Headline too wide at '+width+'px');
-  const heroClearance=await page.evaluate(()=>{
+  const headerClearance=await page.evaluate(()=>{
     const header=document.querySelector('header').getBoundingClientRect();
-    const selector='.desktop-hero-pillars';
-    const eyebrow=document.querySelector(selector).getBoundingClientRect();
-    return {headerBottom:header.bottom,eyebrowTop:eyebrow.top};
+    const brand=document.querySelector('.brand').getBoundingClientRect();
+    const logo=document.querySelector('.brand .logo').getBoundingClientRect();
+    const tagline=document.querySelector('.brand-tagline').getBoundingClientRect();
+    const menu=document.querySelector('.toggle');
+    const navVisible=window.getComputedStyle(menu).display!=='none';
+    const menuLeft=navVisible?menu.getBoundingClientRect().left:Infinity;
+    return {headerBottom:header.bottom,brandBottom:brand.bottom,logoBottom:logo.bottom,taglineTop:tagline.top,taglineRight:tagline.right,menuLeft};
   });
-  if(heroClearance.eyebrowTop<heroClearance.headerBottom+12)
-    throw new Error('Hero overlaps navigation at '+width+'px: eyebrow top '+heroClearance.eyebrowTop+', header bottom '+heroClearance.headerBottom);
+  if(headerClearance.taglineTop<headerClearance.logoBottom-1 || headerClearance.brandBottom>headerClearance.headerBottom+1)
+    throw new Error('Brand lockup overlaps or exceeds header at '+width+'px: '+JSON.stringify(headerClearance));
+  if(headerClearance.taglineRight>headerClearance.menuLeft-5)
+    throw new Error('Brand pillars overlap mobile menu at '+width+'px: '+JSON.stringify(headerClearance));
 }
 await page.setViewportSize({width:390,height:844});
 const layout=await page.evaluate(()=>{
   const box=s=>document.querySelector(s).getBoundingClientRect();
-  const eyebrow=box('.desktop-hero-pillars'),headline=box('.hero h1'),buttons=box('.hero .buttons'),hero=box('.hero'),youtube=box('.youtube'),intro=box('.youtube .eyebrow');
-  return {headlineGap:headline.top-eyebrow.bottom,buttonGap:hero.bottom-buttons.bottom,sectionGap:intro.top-youtube.top,heroHeight:hero.height};
+  const headline=box('.hero h1'),buttons=box('.hero .buttons'),hero=box('.hero'),youtube=box('.youtube'),intro=box('.youtube .eyebrow'),header=box('header');
+  return {headlineGap:headline.top-header.bottom,buttonGap:hero.bottom-buttons.bottom,sectionGap:intro.top-youtube.top,heroHeight:hero.height};
 });
-if(layout.headlineGap<0||layout.headlineGap>40)throw new Error('Brand line disconnected from headline: '+JSON.stringify(layout));
+if(layout.headlineGap<10)throw new Error('Hero headline overlaps header: '+JSON.stringify(layout));
 if(layout.buttonGap>120)throw new Error('Excessive blank area below hero buttons: '+JSON.stringify(layout));
 if(layout.sectionGap>105)throw new Error('Excessive top spacing before YouTube section: '+JSON.stringify(layout));
 await page.getByRole('button',{name:/toggle menu/i}).click();
