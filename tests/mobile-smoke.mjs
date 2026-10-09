@@ -12,11 +12,23 @@ const expected=['images/carl-hero.jpg','images/carl-youtube.jpg','images/carl-le
 for(const path of expected){const r=await page.request.get('http://127.0.0.1:4173/carl-crayon/'+path);if(!r.ok())throw new Error('Missing image '+path);}
 const socialLinks=await page.locator('a[href]').evaluateAll(anchors=>anchors.map(a=>a.getAttribute('href')));
 for(const url of ['https://www.youtube.com/@carlc.official','https://www.tiktok.com/@carlc.official','https://www.instagram.com/carlc.official/'])if(!socialLinks.includes(url))throw new Error('Missing social '+url);
-const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
-if(overflow>2)throw new Error('Mobile horizontal overflow: '+overflow+'px');
+for (const width of [320, 375, 390, 430, 768, 1024, 1440, 1920]) {
+  await page.setViewportSize({width,height:844});
+  await page.waitForTimeout(100);
+  const result=await page.evaluate(()=>({
+    overflow:document.documentElement.scrollWidth-window.innerWidth,
+    headlineWidth:document.querySelector('h1').getBoundingClientRect().width,
+    viewport:window.innerWidth
+  }));
+  if(result.overflow>2)throw new Error('Horizontal overflow at '+width+'px: '+result.overflow+'px');
+  if(result.headlineWidth>result.viewport)throw new Error('Headline too wide at '+width+'px');
+}
+await page.setViewportSize({width:390,height:844});
 await page.getByRole('button',{name:/toggle menu/i}).click();
 if(!(await page.getByRole('navigation',{name:'Main navigation'}).isVisible()))throw new Error('Mobile navigation does not open');
 if(errors.length)throw new Error('JavaScript runtime errors: '+errors.join('; '));
 await page.screenshot({path:'mobile-smoke.png',fullPage:true});
-console.log('PASS: mobile page, assets, navigation, links, zero overflow and runtime errors');
+await page.setViewportSize({width:1440,height:900});
+await page.screenshot({path:'desktop-smoke.png',fullPage:true});
+console.log('PASS: mobile + desktop widths, assets, navigation, links, zero overflow and runtime errors');
 await browser.close();
