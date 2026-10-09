@@ -60,6 +60,9 @@ jobs:
         with:
           path: dist/
   deploy:
+    concurrency:
+      group: github-pages-deployment
+      cancel-in-progress: false
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
